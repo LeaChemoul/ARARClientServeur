@@ -2,14 +2,12 @@ package Serveur;
 
 import Communication.*;
 
-import javax.naming.OperationNotSupportedException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Serveur {
 
@@ -20,20 +18,23 @@ public class Serveur {
 
     public static void main(String[] args) {
         try {
+            System.out.println("Bienvenue sur le serveur d'adresse : " + IP + " ! Port d'écoute : " + PORT);
+
             Communication communication = new Communication(InetAddress.getByName(Serveur.getIP()), Serveur.getPORT());
 
             Message message;
 
             while (true) {
-                System.out.println("Serveur en attente :");
                 message = null;
                 try {
                     message = communication.recevoir(Serveur.getPORT());
                 } catch (Exception ignored) { }
 
                 if (message != null) {
-                    //tester si message est q et alor supprimer la connexion
-                    //if(message.getData())
+                    //tester si message est q et alors supprimer la connexion
+                    if(new String(message.getData(), StandardCharsets.UTF_8).equals("q")){
+                        //supprimer la connexion
+                    }
 
                     if(!dejaConnectee(message.getAdress())){
                         Connexion connexion = new Connexion(InetAddress.getByName(Serveur.getIP()), Serveur.getPORT(), new DatagramSocket(),communication.getDernierPacketRecu());
@@ -56,6 +57,17 @@ public class Serveur {
         return false;
     }
 
+    public  static int findConnexion(InetAddress inetAddress){
+        for (Connexion connexion:connexionsEnCours) {
+            if(connexion.getAdress().equals(inetAddress))
+                return connexionsEnCours.indexOf(connexion);
+        }
+        return -1;
+    }
+
+    public static ArrayList<Connexion> getConnexionsEnCours() {
+        return connexionsEnCours;
+    }
 
     public static int getPORT() {
         return PORT;

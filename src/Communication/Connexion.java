@@ -35,7 +35,7 @@ public class Connexion implements Runnable {
                 if (message != null) {
                     if(new String(message.getData(), StandardCharsets.UTF_8).equals("q"))
                         break;
-                    System.out.println("Message recu : \"" + message.toString() + "\".");
+                    System.out.println("Client "+ Serveur.findConnexion(this.adress) +" : \"" + message.toString() + "\".");
 
                     String reponse = "Nous avons bien reçu votre message depuis " + message.getAdress();
                     communication.repondre(reponse);
