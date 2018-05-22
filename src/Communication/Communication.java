@@ -29,15 +29,16 @@ public class Communication {
         setPort(port);
     }
 
-    public boolean envoyer(String data){
+    public void envoyer(String data){
         try {
-            setDs(new DatagramSocket());
+            if(ds == null){
+                setDs(new DatagramSocket());
+            }
+            System.out.println(ds.getLocalPort());
             DatagramPacket dp = new DatagramPacket(data.getBytes(), data.length(), getAdress(), getPort());
             getDs().send(dp);
-            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -49,6 +50,7 @@ public class Communication {
                 this.ds = new DatagramSocket(this.port);
             dp = new DatagramPacket(data, data.length);
             ds.receive(dp);
+            port = dp.getPort();
             this.dernierPacketRecu = dp;
             return new Message(dp.getPort(),dp.getAddress(),dp.getData());
 

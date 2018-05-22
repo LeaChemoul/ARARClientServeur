@@ -1,6 +1,7 @@
 package Client;
 
 import Communication.Communication;
+import Communication.Message;
 import Serveur.Serveur;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +20,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import sun.font.CharToGlyphMapper;
 
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -29,7 +31,9 @@ public class Client extends Application implements Runnable{
     private TextFlow echange = new TextFlow();
     TextField input = new TextField();
     private String mess ="";
+    private int port = -1;
     private boolean newMess = false;
+    private Communication communication = null;
 
     private Parent createContent(){
         Text t1 = new Text();
@@ -57,6 +61,12 @@ public class Client extends Application implements Runnable{
             }
         });
 
+        try {
+            communication = new Communication(InetAddress.getByName(Serveur.getIP()), Serveur.getPORT());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         input.setOnKeyPressed(new EventHandler<KeyEvent>(){
             public void handle(KeyEvent ke){
                 if(ke.getSource()==input)
@@ -69,26 +79,22 @@ public class Client extends Application implements Runnable{
                                 e.printStackTrace();
                             }
                         }
-                        Communication communication = null;
-                        try {
-                            communication = new Communication(InetAddress.getByName(Serveur.getIP()), Serveur.getPORT());
-                        } catch (UnknownHostException e) {
-                            e.printStackTrace();
-                        }
+
                         communication.envoyer(mess);
-                        newMess = false;
                         Text t3 = new Text();
                         t3.setStyle("-fx-fill: #874ab7;-fx-font-weight:normal;");
-                        t3.setText("Vous : " + mess + "\n");
+                        t3.setText("[Vous :] " + mess + "\n");
                         echange.getChildren().add(t3);
                         //scrollPane.setVvalue( 2.0d );
 
-                        String answer = communication.recevoir().toString();
+                        Message serveuranswer = communication.recevoir();
+                        String answer = serveuranswer.toString();
                         if (answer != null){
                             Text t4 = new Text();
                             t4.setStyle("-fx-fill: #1d9691;-fx-font-weight:normal;");
-                            t4.setText("Vous avez reçu une réponse du serveur : \n " + answer + ".\n");
+                            t4.setText("[Serveur :] \n " + answer + ".\n");
                             echange.getChildren().add(t4);
+                            input.setText("");
                         }
                     }
             }
@@ -118,7 +124,6 @@ public class Client extends Application implements Runnable{
                     t3.setText(mess + "\n");
                     echange.getChildren().add(t3);
                 }
-
 
                 String answer = communication.recevoir().toString();
                 if (answer != null)
