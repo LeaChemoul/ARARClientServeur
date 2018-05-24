@@ -31,7 +31,6 @@ public class Client extends Application implements Runnable{
     private TextFlow echange = new TextFlow();
     TextField input = new TextField();
     private String mess ="";
-    private int port = -1;
     private boolean newMess = false;
     private Communication communication = null;
 

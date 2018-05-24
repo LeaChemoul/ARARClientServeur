@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Serveur {
 
     private static final int PORT = 1500;
-    private static final String IP = "134.214.119.227";
+    private static final String IP = "127.0.0.1";
 
     private static ArrayList<Connexion> connexionsEnCours = new ArrayList<>();
 
